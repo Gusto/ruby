@@ -19,4 +19,6 @@ steps = Dir.glob("./**/Dockerfile").map do |dockerfile|
   end
 end
 
-puts steps
+File.open('.buildkite/pipeline.yml', 'w') do |f|
+  f.puts YAML.dump(steps)
+end

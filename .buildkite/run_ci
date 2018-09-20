@@ -1,0 +1,14 @@
+#!/bin/bash -e
+
+echo "--- Generating new pipeline.yml"
+docker run \
+  -v "$(pwd):/pwd" \
+  -w "/pwd" \
+  -e BUILDKITE_BRANCH \
+  ruby:2.5-alpine3.7 \
+  ruby /pwd/.buildkite/generate_steps.rb
+
+echo "--- New pipeline.yml"
+cat .buildkite/pipeline.yml
+
+buildkite-agent pipeline upload
