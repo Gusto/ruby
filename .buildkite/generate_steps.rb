@@ -9,12 +9,12 @@ steps = Dir.glob("./**/Dockerfile").map do |dockerfile|
   
     {
       'name' => "Ruby #{ruby_version} on #{os_version}",
-      'command' => "docker build -t gusto/ruby:#{ruby_version}-#{os_version} && docker push gusto/ruby:#{ruby_version}-#{os_version}",
+      'command' => "docker build -t gusto/ruby:#{ruby_version}-#{os_version} -f #{dockerfile} . && docker push gusto/ruby:#{ruby_version}-#{os_version}",
     }
   else
     {
       'name' => "Ruby #{ruby_version} on #{os_version}",
-      'command' => "docker build -t gusto/ruby:#{ruby_version}-#{os_version}",
+      'command' => "docker build -t gusto/ruby:#{ruby_version}-#{os_version} -f #{dockerfile} .",
     }
   end
 end
