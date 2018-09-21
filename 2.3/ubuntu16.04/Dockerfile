@@ -26,6 +26,7 @@ RUN set -ex \
 		ruby \
 		wget \
 		autoconf \
+		ca-certificates \
 	' \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends $buildDeps \
@@ -57,6 +58,8 @@ RUN set -ex \
 		--enable-shared \
 	&& make -j "$(nproc)" \
 	&& make install \
+	\
+	&& update-ca-certificates \
 	\
 	&& apt-get purge -y --auto-remove $buildDeps \
 	&& cd / \
