@@ -1,6 +1,6 @@
 require 'yaml'
 
-branch = ENV['BUIDLKITE_BRANCH']
+branch = ENV['BUILDKITE_BRANCH']
 
 steps = Dir.glob("./**/Dockerfile").map do |dockerfile|
   ruby_version = dockerfile.split('/')[1]

@@ -1,3 +1,4 @@
 ---
-- name: Ruby 2.3 on ubuntu16.04
+- name: ":ruby:Ruby 2.3 on :ubuntu:ubuntu16.04"
   command: docker build -t gusto/ruby:2.3-ubuntu16.04 -f ./2.3/ubuntu16.04/Dockerfile
+    . && docker push gusto/ruby:2.3-ubuntu16.04
