@@ -22,6 +22,7 @@ RUN set -ex \
 		gcc \
 		dpkg-dev \
 		libgdbm-dev \
+		libreadline-dev \
 		libssl-dev \
 		ruby \
 		wget \
