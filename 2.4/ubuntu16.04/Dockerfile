@@ -10,6 +10,7 @@ RUN apt-get update \
 		libyaml-dev \
 		procps \
 		zlib1g-dev \
+		tzdata \
 	&& rm -rf /var/lib/apt/lists/*
 
 # skip installing gem documentation
