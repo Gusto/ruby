@@ -89,13 +89,9 @@ The environment variables we set are canonically listed in the above-linked `Doc
 
 If these cause issues for your use case (running multiple Ruby applications in a single container, for example), setting them to the empty string *should* be sufficient for undoing their behavior.
 
-# Image Variants
+## `gusto/ruby:<version>-ubuntu<ubuntu-version>`
 
-The `gusto/ruby` images come in many flavors, each designed for a specific use case.
-
-## `gusto/ruby:<version>`
-
-This is the defacto image. If you are unsure about what your needs are, you probably want to use this one. It is designed to be used both as a throw away container (mount your source code and start the container to start your app), as well as the base to build other images off of.
+This is the image naming scheme.
 
 This tag is based off of [`ubuntu`](https://hub.docker.com/_/ubuntu). 
 The tags can also specify a specific version of ubuntu (ie `gusto/ruby:2.5-ubuntu14.04`)
