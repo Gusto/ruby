@@ -24,7 +24,7 @@ steps = Dir.glob("./**/Dockerfile").map do |dockerfile|
       {
         'name' => name + " to push the latest tag",
         'commands' => [
-          "docker build -t gusto/ruby:latest -f #{dockerfile}",
+          "docker build -t gusto/ruby:latest -f #{dockerfile} .",
           "docker push gusto/ruby:latest",
         ]
       }
@@ -34,9 +34,9 @@ steps = Dir.glob("./**/Dockerfile").map do |dockerfile|
       {
         'name' => name + " to push the version tag",
         'commands' => [
-          "docker build -t gusto/ruby:#{ruby_version} -f #{dockerfile}",
+          "docker build -t gusto/ruby:#{ruby_version} -f #{dockerfile} .",
           "docker push gusto/ruby:#{ruby_version}",
-          "docker build -t gusto/ruby:#{minor_version} -f #{dockerfile}",
+          "docker build -t gusto/ruby:#{minor_version} -f #{dockerfile} .",
           "docker push gusto/ruby:#{minor_version}",
         ]
       }
@@ -44,9 +44,9 @@ steps = Dir.glob("./**/Dockerfile").map do |dockerfile|
     {
       'name' => name,
       'commands' => [
-        "docker build -t gusto/ruby:#{ruby_version}-#{os_version} -f #{dockerfile}",
+        "docker build -t gusto/ruby:#{ruby_version}-#{os_version} -f #{dockerfile} .",
         "docker push gusto/ruby:#{ruby_version}-#{os_version}",
-        "docker build -t gusto/ruby:#{minor_version}-#{os_version} -f #{dockerfile}",
+        "docker build -t gusto/ruby:#{minor_version}-#{os_version} -f #{dockerfile} .",
         "docker push gusto/ruby:#{minor_version}-#{os_version}",
       ]
 
