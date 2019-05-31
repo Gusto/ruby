@@ -7,6 +7,7 @@ RUN apt-get update \
 		libffi-dev \
 		libgdbm3 \
 		libssl-dev \
+		libgmp-dev \
 		libyaml-dev \
 		procps \
 		zlib1g-dev \
@@ -28,7 +29,8 @@ ENV RUBY_DOWNLOAD_SHA256 acb00f04374899ba8ee74bbbcb9b35c5c6b1fd229f1876554ee76f0
 #   we purge system ruby later to make sure our final image uses what we just built
 RUN set -ex \
 	\
-	&& buildDeps=' \
+	&& savedAptMark="$(apt-mark showmanual)" \
+	&& apt-get update && apt-get install -y --no-install-recommends \
 		autoconf \
 		bison \
 		dpkg-dev \
@@ -44,9 +46,6 @@ RUN set -ex \
 		ruby \
 		wget \
 		xz-utils \
-	' \
-	&& apt-get update \
-	&& apt-get install -y --no-install-recommends $buildDeps \
 	&& rm -rf /var/lib/apt/lists/* \
 	\
 	&& wget -O ruby.tar.xz "https://cache.ruby-lang.org/pub/ruby/${RUBY_MAJOR%-rc}/ruby-$RUBY_VERSION.tar.xz" \
@@ -76,10 +75,17 @@ RUN set -ex \
 	&& make -j "$(nproc)" \
 	&& make install \
 	\
-	&& dpkg-query --show --showformat '${package}\n' \
-		| grep -P '^libreadline\d+$' \
-		| xargs apt-mark manual \
-	&& apt-get purge -y --auto-remove $buildDeps \
+	&& apt-mark auto '.*' > /dev/null \
+	&& apt-mark manual $savedAptMark \
+	&& find /usr/local -type f -executable -not \( -name '*tkinter*' \) -exec ldd '{}' ';' \
+		| awk '/=>/ { print $(NF-1) }' \
+		| sort -u \
+		| xargs -r dpkg-query --search \
+		| cut -d: -f1 \
+		| sort -u \
+		| xargs -r apt-mark manual \
+	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+	\
 	&& cd / \
 	&& rm -r /usr/src/ruby \
 # rough smoke test

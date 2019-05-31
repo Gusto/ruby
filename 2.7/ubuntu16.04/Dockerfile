@@ -1,12 +1,13 @@
-FROM ubuntu:18.04
+FROM ubuntu:16.04
 
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
 		bzip2 \
 		ca-certificates \
 		libffi-dev \
-		libgdbm5 \
-		libssl1.0-dev \
+		libgdbm3 \
+		libssl-dev \
+		libgmp-dev \
 		libyaml-dev \
 		procps \
 		zlib1g-dev \
@@ -20,16 +21,16 @@ RUN mkdir -p /usr/local/etc \
 		echo 'update: --no-document'; \
 	} >> /usr/local/etc/gemrc
 
-ENV RUBY_MAJOR 2.3
-ENV RUBY_VERSION 2.3.8
-ENV RUBY_DOWNLOAD_SHA256 910f635d84fd0d81ac9bdee0731279e6026cb4cd1315bbbb5dfb22e09c5c1dfe
-ENV RUBYGEMS_VERSION 3.0.1
+ENV RUBY_MAJOR 2.7
+ENV RUBY_VERSION 2.7.0-preview1
+ENV RUBY_DOWNLOAD_SHA256 8c546df3345398b3edc9d0ab097846f033783d33762889fd0f3dc8bb465c3354
 
 # some of ruby's build scripts are written in ruby
 #   we purge system ruby later to make sure our final image uses what we just built
 RUN set -ex \
 	\
-	&& buildDeps=' \
+	&& savedAptMark="$(apt-mark showmanual)" \
+	&& apt-get update && apt-get install -y --no-install-recommends \
 		autoconf \
 		bison \
 		dpkg-dev \
@@ -45,9 +46,6 @@ RUN set -ex \
 		ruby \
 		wget \
 		xz-utils \
-	' \
-	&& apt-get update \
-	&& apt-get install -y --no-install-recommends $buildDeps \
 	&& rm -rf /var/lib/apt/lists/* \
 	\
 	&& wget -O ruby.tar.xz "https://cache.ruby-lang.org/pub/ruby/${RUBY_MAJOR%-rc}/ruby-$RUBY_VERSION.tar.xz" \
@@ -77,17 +75,21 @@ RUN set -ex \
 	&& make -j "$(nproc)" \
 	&& make install \
 	\
-	&& dpkg-query --show --showformat '${package}\n' \
-		| grep -P '^libreadline\d+$' \
-		| xargs apt-mark manual \
-	&& apt-get purge -y --auto-remove $buildDeps \
+	&& apt-mark auto '.*' > /dev/null \
+	&& apt-mark manual $savedAptMark \
+	&& find /usr/local -type f -executable -not \( -name '*tkinter*' \) -exec ldd '{}' ';' \
+		| awk '/=>/ { print $(NF-1) }' \
+		| sort -u \
+		| xargs -r dpkg-query --search \
+		| cut -d: -f1 \
+		| sort -u \
+		| xargs -r apt-mark manual \
+	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+	\
 	&& cd / \
 	&& rm -r /usr/src/ruby \
-# make sure bundled "rubygems" is older than RUBYGEMS_VERSION (https://github.com/docker-library/ruby/issues/246)
-        && ruby -e 'exit(Gem::Version.create(ENV["RUBYGEMS_VERSION"]) > Gem::Version.create(Gem::VERSION))' \
-        && gem update --system "$RUBYGEMS_VERSION" && rm -r /root/.gem/ \
 # rough smoke test
-        && ruby --version && gem --version && bundle --version
+	&& ruby --version && gem --version && bundle --version
 
 # install things globally, for great justice
 # and don't create ".bundle" in all our apps
