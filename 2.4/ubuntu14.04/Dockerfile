@@ -29,7 +29,7 @@ ENV RUBYGEMS_VERSION 3.0.3
 #   we purge system ruby later to make sure our final image uses what we just built
 RUN set -ex \
 	\
-	&& savedAptMark="$(apt-mark showmanual)"' \
+	&& savedAptMark="$(apt-mark showmanual)" \
 	&& apt-get update && apt-get install -y --no-install-recommends \
 		autoconf \
 		bison \
