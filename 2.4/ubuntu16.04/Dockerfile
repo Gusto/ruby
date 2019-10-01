@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:16.04@sha256:6239ca16d54d8edd38788aacde7c6426e5999ffbbd7e97ac3cf04d474341d079
 
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
