@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM ubuntu:14.04@sha256:2f7c79927b346e436cc14c92bd4e5bd778c3bd7037f35bc639ac1589a7acfa90
 
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
