@@ -21,8 +21,8 @@ RUN mkdir -p /usr/local/etc \
 	} >> /usr/local/etc/gemrc
 
 ENV RUBY_MAJOR 2.4
-ENV RUBY_VERSION 2.4.4
-ENV RUBY_DOWNLOAD_SHA256 1d0034071d675193ca769f64c91827e5f54cb3a7962316a41d5217c7bc6949f0
+ENV RUBY_VERSION 2.4.7
+ENV RUBY_DOWNLOAD_SHA256 a249193c7e79b891a4783f951cad8160fa5fe985c385b4628db8e9913bff1f98
 ENV RUBYGEMS_VERSION 3.0.1
 
 # some of ruby's build scripts are written in ruby
@@ -35,6 +35,7 @@ RUN set -ex \
 		dpkg-dev \
 		gcc \
 		libbz2-dev \
+ 		libgdbm-compat-dev \
 		libgdbm-dev \
 		libglib2.0-dev \
 		libncurses-dev \
