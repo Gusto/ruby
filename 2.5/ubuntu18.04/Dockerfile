@@ -21,8 +21,8 @@ RUN mkdir -p /usr/local/etc \
 	} >> /usr/local/etc/gemrc
 
 ENV RUBY_MAJOR 2.5
-ENV RUBY_VERSION 2.5.6
-ENV RUBY_DOWNLOAD_SHA256 7601e4b83f4f17bc1affe091502dd465282ffba0761dea57c071ead21b132cee
+ENV RUBY_VERSION 2.5.7
+ENV RUBY_DOWNLOAD_SHA256 201870e8f58957d542233fef588b1d76f7bf962fea44dcbd2237f4a5899a3f95
 ENV RUBYGEMS_VERSION 3.0.1
 
 # some of ruby's build scripts are written in ruby
