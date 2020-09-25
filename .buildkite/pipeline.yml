@@ -1,4 +1,10 @@
 ---
+- name: ":ruby:Ruby 3.0 on :ubuntu:ubuntu18.04"
+  command: docker build -f ./3.0/ubuntu18.04/Dockerfile .
+- name: ":ruby:Ruby 3.0 on :ubuntu:ubuntu16.04"
+  command: docker build -f ./3.0/ubuntu16.04/Dockerfile .
+- name: ":ruby:Ruby 3.0 on :ubuntu:ubuntu14.04"
+  command: docker build -f ./3.0/ubuntu14.04/Dockerfile .
 - name: ":ruby:Ruby 2.7 on :ubuntu:ubuntu18.04"
   command: docker build -f ./2.7/ubuntu18.04/Dockerfile .
 - name: ":ruby:Ruby 2.7 on :ubuntu:ubuntu16.04"
