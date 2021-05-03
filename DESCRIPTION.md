@@ -1,18 +1,3 @@
-# Supported tags and respective `Dockerfile` links
-
--	[`2.6-ubuntu18.04`, `2.6`, `2` (*2.6/ubuntu18.04/Dockerfile*)](https://github.com/Gusto/ruby/blob/master/2.6/ubuntu18.04/Dockerfile)
--	[`2.6-ubuntu16.04` (*2.6/ubuntu16.04/Dockerfile*)](https://github.com/Gusto/ruby/blob/master/2.6/ubuntu16.04/Dockerfile)
--	[`2.6-ubuntu14.04` (*2.6/ubuntu14.04/Dockerfile*)](https://github.com/Gusto/ruby/blob/master/2.6/ubuntu14.04/Dockerfile)
--	[`2.5-ubuntu18.04`, `2.5` (*2.5/ubuntu18.04/Dockerfile*)](https://github.com/Gusto/ruby/blob/master/2.5/ubuntu18.04/Dockerfile)
--	[`2.5-ubuntu16.04` (*2.5/ubuntu16.04/Dockerfile*)](https://github.com/Gusto/ruby/blob/master/2.5/ubuntu16.04/Dockerfile)
--	[`2.5-ubuntu14.04` (*2.5/ubuntu14.04/Dockerfile*)](https://github.com/Gusto/ruby/blob/master/2.5/ubuntu14.04/Dockerfile)
--	[`2.4-ubuntu18.04`, `2.4` (*2.4/ubuntu18.04/Dockerfile*)](https://github.com/Gusto/ruby/blob/master/2.4/ubuntu18.04/Dockerfile)
--	[`2.4-ubuntu16.04` (*2.4/ubuntu16.04/Dockerfile*)](https://github.com/Gusto/ruby/blob/master/2.4/ubuntu16.04/Dockerfile)
--	[`2.4-ubuntu14.04` (*2.4/ubuntu14.04/Dockerfile*)](https://github.com/Gusto/ruby/blob/master/2.4/ubuntu14.04/Dockerfile)
--	[`2.3-ubuntu18.04`, `2.3` (*2.3/ubuntu18.04/Dockerfile*)](https://github.com/Gusto/ruby/blob/master/2.3/ubuntu18.04/Dockerfile)
--	[`2.3-ubuntu16.04` (*2.3/ubuntu16.04/Dockerfile*)](https://github.com/Gusto/ruby/blob/master/2.3/ubuntu16.04/Dockerfile)
--	[`2.3-ubuntu14.04` (*2.3/ubuntu14.04/Dockerfile*)](https://github.com/Gusto/ruby/blob/master/2.3/ubuntu14.04/Dockerfile)
-
 # Quick reference
 
 -	**Where to file issues**:  
