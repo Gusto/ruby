@@ -85,7 +85,6 @@ RUN set -ex \
 	&& cd / \
 	&& rm -r /usr/src/ruby \
 	\
-	&& rm -r /root/.gem/ \
 # rough smoke test
 	&& ruby --version \
 	&& gem --version \
