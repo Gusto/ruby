@@ -1,21 +1,16 @@
-FROM ubuntu:20.04 as builder
-
-ENV RUBY_MAJOR 2.7
-ENV RUBY_VERSION 2.7.3
-ENV RUBY_DOWNLOAD_SHA256 5e91d1650857d43cd6852e05ac54683351e9c301811ee0bef43a67c4605e7db1
-ENV LANG C.UTF-8
+FROM ubuntu:20.04
 
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
-		bzip2 \
 		ca-certificates \
-		libffi-dev \
-		libgdbm6 \
-		libssl-dev \
-		libyaml-dev \
-		procps \
+		build-essential \
+		bison \
 		zlib1g-dev \
-		tzdata \
+		libyaml-dev \
+		libssl-dev \
+		libgdbm-dev \
+		libreadline-dev \
+		libffi-dev \
 	&& rm -rf /var/lib/apt/lists/*
 
 # skip installing gem documentation
@@ -25,26 +20,32 @@ RUN mkdir -p /usr/local/etc \
 		echo 'update: --no-document'; \
 	} >> /usr/local/etc/gemrc
 
+ENV RUBY_MAJOR 2.7
+ENV RUBY_VERSION 2.7.3
+ENV RUBY_DOWNLOAD_SHA256 5e91d1650857d43cd6852e05ac54683351e9c301811ee0bef43a67c4605e7db1
+
 # some of ruby's build scripts are written in ruby
 #   we purge system ruby later to make sure our final image uses what we just built
 RUN set -ex \
 	\
 	&& buildDeps=' \
+		apt-utils \
 		autoconf \
+		automake \
 		bison \
-		dpkg-dev \
-		gcc \
-		libbz2-dev \
+		libc6-dev \
+		libffi-dev \
 		libgdbm-dev \
-		libglib2.0-dev \
-		libncurses-dev \
+		libgmp-dev \
+		libcurl4-openssl-dev \
+		libncurses5-dev \
 		libreadline-dev \
-		libxml2-dev \
-		libxslt-dev \
+		libsqlite3-dev \
 		make \
-		ruby \
+		patch \
+		pkg-config \
+		sqlite3 \
 		wget \
-		xz-utils \
 	' \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends $buildDeps \
@@ -83,14 +84,20 @@ RUN set -ex \
 	&& apt-get purge -y --auto-remove $buildDeps \
 	&& cd / \
 	&& rm -r /usr/src/ruby \
+	\
+	&& rm -r /root/.gem/ \
 # rough smoke test
-	&& ruby --version && gem --version && bundle --version
+	&& ruby --version \
+	&& gem --version \
+	&& bundle --version
 
 # don't create ".bundle" in all our apps
 ENV GEM_HOME /usr/local/bundle
 ENV BUNDLE_SILENCE_ROOT_WARNING=1 \
 	BUNDLE_APP_CONFIG="$GEM_HOME"
 ENV PATH $GEM_HOME/bin:$PATH
+# path recommendation: https://github.com/bundler/bundler/pull/6469#issuecomment-383235438
+ENV PATH $GEM_HOME/bin:$BUNDLE_PATH/gems/bin:$PATH
 # adjust permissions of a few directories for running "gem install" as an arbitrary user
 RUN mkdir -p "$GEM_HOME" && chmod 777 "$GEM_HOME"
 
