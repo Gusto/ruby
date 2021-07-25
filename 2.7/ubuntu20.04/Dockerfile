@@ -16,7 +16,6 @@ RUN apt-get update -q \
   && curl -sSLf https://raw.githubusercontent.com/fullstaq-labs/fullstaq-ruby-server-edition/main/fullstaq-ruby.asc | apt-key add - \
   && echo "deb https://apt.fullstaqruby.org ubuntu-20.04 main" | tee /etc/apt/sources.list.d/fullstaq-ruby.list \
   && apt-get update -q \
-	&& apt-get install --yes fullstaq-ruby-common \
   && apt-get install --yes -q --no-install-recommends fullstaq-ruby-${RUBY_VERSION}-${RUBY_VARIANT} \
   && apt-get autoremove --yes \
   && rm -rf /var/lib/apt/lists \
