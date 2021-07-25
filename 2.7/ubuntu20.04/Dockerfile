@@ -9,10 +9,10 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN apt-get update -q \
   && apt-get dist-upgrade --yes \
   && apt-get install --yes -q --no-install-recommends \
-      curl \
-      gnupg \
-      apt-transport-https \
-      ca-certificates \
+    curl \
+    gnupg \
+    apt-transport-https \
+    ca-certificates \
   && curl -sSLf https://raw.githubusercontent.com/fullstaq-labs/fullstaq-ruby-server-edition/main/fullstaq-ruby.asc | apt-key add - \
   && echo "deb https://apt.fullstaqruby.org ubuntu-20.04 main" | tee /etc/apt/sources.list.d/fullstaq-ruby.list \
   && apt-get update -q \
