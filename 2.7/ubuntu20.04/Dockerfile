@@ -31,4 +31,8 @@ ENV BUNDLE_PATH="$GEM_HOME" \
 # Path recommendation: https://github.com/bundler/bundler/pull/6469#issuecomment-383235438
 ENV PATH $GEM_HOME/bin:$BUNDLE_PATH/gems/bin:/usr/lib/fullstaq-ruby/versions/${RUBY_VERSION}-${RUBY_VARIANT}/bin:$PATH
 
+# Adjust permissions of a few directories for running "gem install" as an
+# arbitrary user.
+RUN mkdir -p "$GEM_HOME" && chmod 777 "$GEM_HOME"
+
 CMD [ "irb" ]
