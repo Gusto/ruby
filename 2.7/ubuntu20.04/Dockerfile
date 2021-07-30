@@ -6,7 +6,8 @@ ENV RUBY_VARIANT jemalloc
 # RUN with pipe recommendation: https://github.com/hadolint/hadolint/wiki/DL4006
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN apt-get update -q \
+RUN echo "gem: --no-document" | tee /etc/gemrc \
+  && apt-get update -q \
   && apt-get dist-upgrade --yes \
   && apt-get install --yes -q --no-install-recommends \
     curl \
