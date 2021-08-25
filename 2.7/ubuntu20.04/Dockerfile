@@ -1,11 +1,11 @@
-FROM ubuntu:20.04
+FROM ubuntu:20.04@sha256:82becede498899ec668628e7cb0ad87b6e1c371cb8a1e597d83a47fac21d6af3
 
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
 		bzip2 \
 		ca-certificates \
 		libffi-dev \
-		libgdbm5 \
+		libgdbm6 \
 		libssl-dev \
 		libyaml-dev \
 		procps \
