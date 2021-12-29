@@ -1,4 +1,6 @@
 ---
+- name: "Do something random"
+  command: echo "do something random"
 - name: ":ruby:Ruby 2.7 on :ubuntu:ubuntu18.04"
   commands:
   - docker build -t gusto/ruby:2.7-ubuntu18.04 -f ./2.7/ubuntu18.04/Dockerfile .
