@@ -45,23 +45,26 @@
   commands:
   - docker build -t gusto/ruby:3.0-ubuntu18.04 -f ./3.0/ubuntu18.04/Dockerfile .
   - docker push gusto/ruby:3.0-ubuntu18.04
-  - docker build -t gusto/ruby:3.0.0-preview1-ubuntu18.04 -f ./3.0/ubuntu18.04/Dockerfile
-    .
-  - docker push gusto/ruby:3.0.0-preview1-ubuntu18.04
+  - docker build -t gusto/ruby:3.0.3-ubuntu18.04 -f ./3.0/ubuntu18.04/Dockerfile .
+  - docker push gusto/ruby:3.0.3-ubuntu18.04
 - name: ":ruby:Ruby 3.0 on :ubuntu:ubuntu16.04"
   commands:
   - docker build -t gusto/ruby:3.0-ubuntu16.04 -f ./3.0/ubuntu16.04/Dockerfile .
   - docker push gusto/ruby:3.0-ubuntu16.04
-  - docker build -t gusto/ruby:3.0.0-preview1-ubuntu16.04 -f ./3.0/ubuntu16.04/Dockerfile
-    .
-  - docker push gusto/ruby:3.0.0-preview1-ubuntu16.04
+  - docker build -t gusto/ruby:3.0.3 -f ./3.0/ubuntu16.04/Dockerfile .
+  - docker push gusto/ruby:3.0.3-ubuntu16.04
 - name: ":ruby:Ruby 3.0 on :ubuntu:ubuntu14.04"
   commands:
   - docker build -t gusto/ruby:3.0-ubuntu14.04 -f ./3.0/ubuntu14.04/Dockerfile .
   - docker push gusto/ruby:3.0-ubuntu14.04
-  - docker build -t gusto/ruby:3.0.0-preview1-ubuntu14.04 -f ./3.0/ubuntu14.04/Dockerfile
-    .
-  - docker push gusto/ruby:3.0.0-preview1-ubuntu14.04
+  - docker build -t gusto/ruby:3.0.3-ubuntu14.04 -f ./3.0/ubuntu14.04/Dockerfile .
+  - docker push gusto/ruby:3.0.3-ubuntu14.04
+- name: ":ruby:Ruby 3.0 on :ubuntu:ubuntu20.04"
+  commands:
+  - docker build -t gusto/ruby:3.0-ubuntu20.04 -f ./3.0/ubuntu20.04/Dockerfile .
+  - docker push gusto/ruby:3.0-ubuntu20.04
+  - docker build -t gusto/ruby:3.0.3-ubuntu20.04 -f ./3.0/ubuntu20.04/Dockerfile .
+  - docker push gusto/ruby:3.0.3-ubuntu20.04
 - name: ":ruby:Ruby 2.4 on :ubuntu:ubuntu18.04"
   commands:
   - docker build -t gusto/ruby:2.4-ubuntu18.04 -f ./2.4/ubuntu18.04/Dockerfile .
