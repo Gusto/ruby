@@ -72,7 +72,8 @@ SUPPORTED_PAIRS.each do |ruby_version, os_bases|
 
     platform_caches = platforms.map { |platform| "--cache-from type=local,src=#{platform}-image-build" }.join(" ")
     platform_args = platforms.map { |platform| "linux/#{platform}" }.join(",")
-    push_args = ""
+    push_args = branch == "master" ? "--push" : ""
+
     steps.push({
       'name' => ":ruby:Ruby #{ruby_version} on :ubuntu:#{os_version}",
       'depends_on' => platform_keys,
