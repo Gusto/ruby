@@ -3,3 +3,9 @@
 
 # Details
 You can find additional details in the [DESCRIPTION.md](https://github.com/Gusto/ruby/blob/master/DESCRIPTION.md) file
+
+## Supported Versions of Ruby
+
+- `2.7`, with OS base images:
+  - `ubuntu:20.04`
+  - `ubuntu:18.04`

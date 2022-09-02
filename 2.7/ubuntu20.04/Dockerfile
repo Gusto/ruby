@@ -1,5 +1,6 @@
-FROM ubuntu:20.04@sha256:82becede498899ec668628e7cb0ad87b6e1c371cb8a1e597d83a47fac21d6af3
-
+# syntax=docker/dockerfile:1
+FROM ubuntu:20.04
+ARG TARGETPLATFORM
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
 		bzip2 \
@@ -11,6 +12,11 @@ RUN apt-get update \
 		procps \
 		zlib1g-dev \
 		tzdata \
+		libjemalloc2\
+		gnupg2 \
+	&& echo "$TARGETPLATFORM" \
+	&& if [ "$TARGETPLATFORM" = "linux/arm64" ]; then ln -s /usr/lib/aarch64-linux-gnu/libjemalloc.so.2 /usr/lib/libjemalloc.so.2; fi \
+	&& if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ln -s /usr/lib/x86_64-linux-gnu/libjemalloc.so.2 /usr/lib/libjemalloc.so.2; fi \
 	&& rm -rf /var/lib/apt/lists/*
 
 # skip installing gem documentation
@@ -20,9 +26,10 @@ RUN mkdir -p /usr/local/etc \
 		echo 'update: --no-document'; \
 	} >> /usr/local/etc/gemrc
 
+ENV LD_PRELOAD=/usr/lib/libjemalloc.so.2
 ENV RUBY_MAJOR 2.7
-ENV RUBY_VERSION 2.7.4
-ENV RUBY_DOWNLOAD_SHA256 2a80824e0ad6100826b69b9890bf55cfc4cf2b61a1e1330fccbcb30c46cef8d7
+ENV RUBY_VERSION 2.7.6
+ENV RUBY_DOWNLOAD_SHA256 54dcd3044726c4ab75a9d4604720501442b229a3aed6a55fe909567da8807f24
 
 # some of ruby's build scripts are written in ruby
 #   we purge system ruby later to make sure our final image uses what we just built

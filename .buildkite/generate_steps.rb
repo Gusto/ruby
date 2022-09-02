@@ -5,60 +5,99 @@ branch = ENV['BUILDKITE_BRANCH']
 def get_ruby_minor_version(filename, major_version)
   File.open(filename) do |file|
     file.each_line do |line|
-      if (line['RUBY_VERSION ' + major_version])
+      if (line["RUBY_VERSION #{major_version}"])
         return line.split(" ")[2]
       end
     end
   end
 end
 
-first = true
-steps = Dir.glob("./**/Dockerfile").map do |dockerfile|
-  ruby_version = dockerfile.split('/')[1]
-  os_version = dockerfile.split('/')[2]
-  name = ":ruby:Ruby #{ruby_version} on :ubuntu:#{os_version}"
-  minor_version = get_ruby_minor_version(dockerfile, ruby_version)
+SUPPORTED_PAIRS = {
+  "2.7": {
+    "ubuntu20.04": ["amd64", "arm64"],
+    "ubuntu18.04": ["amd64"],
+  }
+}
 
-  if branch == 'master'
-    if first
-      {
-        'name' => name + " to push the latest tag",
+QUEUES_FOR_PLATFORM = {
+  'amd64' => 'default',
+  'arm64' => 'default_arm'
+}
+
+step_counter = 0
+steps = []
+
+SUPPORTED_PAIRS.each do |ruby_version, os_bases|
+  os_bases.each do |os_version, platforms|
+    dockerfile = "#{ruby_version}/#{os_version}/Dockerfile"
+    minor_version = get_ruby_minor_version(dockerfile, ruby_version)
+    ruby_major_tag = "#{ruby_version}-#{os_version}"
+    ruby_minor_tag = "#{minor_version}-#{os_version}"
+
+    platform_keys = []
+
+    platforms.each do |platform|
+      step_counter += 1
+      name = ":ruby:Ruby #{ruby_version} on :ubuntu:#{os_version} for #{platform}"
+      step_key = "ruby-build-step-#{step_counter}"
+      platform_step = {
+        'name' => name,
+        'key' => step_key,
+        'agents' => {
+          'queue' => QUEUES_FOR_PLATFORM[platform]
+        },
         'commands' => [
-          "docker build -t gusto/ruby:latest -f #{dockerfile} .",
-          "docker push gusto/ruby:latest",
-        ]
+          "docker buildx rm ruby-builder || true",
+          "docker buildx create --name ruby-builder",
+          "docker buildx build --builder ruby-builder --platform linux/#{platform} --cache-to type=local,dest=#{platform}-image-build -f #{dockerfile} .",
+          "docker buildx rm ruby-builder || true",
+        ],
+        'plugins' => [{
+          "ssh://git@github.com/Gusto/cache-buildkite-plugin.git#v1.11" => { 
+            "save" => {
+              "name" => step_key,
+              "key" => [
+                dockerfile
+              ],
+              "path" => [
+                "#{platform}-image-build"
+              ]
+            }
+          }
+        }]
       }
-      first = false
+
+      platform_keys.push(step_key)
+      steps.push(platform_step)
     end
-    if os_version == 'ubuntu18.04'
-      {
-        'name' => name + " to push the version tag",
-        'commands' => [
-          "docker build -t gusto/ruby:#{ruby_version} -f #{dockerfile} .",
-          "docker push gusto/ruby:#{ruby_version}",
-          "docker build -t gusto/ruby:#{minor_version} -f #{dockerfile} .",
-          "docker push gusto/ruby:#{minor_version}",
-        ]
-      }
-    end
-    {
-      'name' => name,
+
+    platform_caches = platforms.map { |platform| "--cache-from type=local,src=#{platform}-image-build" }.join(" ")
+    platform_args = platforms.map { |platform| "linux/#{platform}" }.join(",")
+    push_args = branch == "master" ? "--push" : ""
+
+    steps.push({
+      'name' => ":ruby:Ruby #{ruby_version} on :ubuntu:#{os_version}",
+      'depends_on' => platform_keys,
+      'plugins' => [{
+        "ssh://git@github.com/Gusto/cache-buildkite-plugin.git#v1.11" => { 
+          "restore" => platform_keys
+        }
+      }],
       'commands' => [
-        "docker build -t gusto/ruby:#{ruby_version}-#{os_version} -f #{dockerfile} .",
-        "docker push gusto/ruby:#{ruby_version}-#{os_version}",
-        "docker build -t gusto/ruby:#{minor_version}-#{os_version} -f #{dockerfile} .",
-        "docker push gusto/ruby:#{minor_version}-#{os_version}",
+        "docker buildx rm ruby-builder || true",
+        "docker buildx create --name ruby-builder",
+        "docker buildx build --builder ruby-builder --tag gusto/ruby:#{ruby_major_tag} --platform #{platform_args} #{platform_caches} #{push_args} -f #{dockerfile} .",
+        "docker buildx build --builder ruby-builder --tag gusto/ruby:#{ruby_minor_tag} --platform #{platform_args} #{platform_caches} #{push_args} -f #{dockerfile} .",
+        "docker buildx rm ruby-builder || true",
       ]
-
-    }
-  else
-    {
-      'name' => name,
-      'command' => "docker build -f #{dockerfile} .",
-    }
+    })
   end
 end
 
+puts "Generated YAML"
+generated_yaml = {"steps" => steps}.to_yaml
+puts generated_yaml
+
 File.open('.buildkite/pipeline.yml', 'w') do |f|
-  f.puts YAML.dump(steps)
+  f.puts generated_yaml
 end
