@@ -9,3 +9,6 @@ You can find additional details in the [DESCRIPTION.md](https://github.com/Gusto
 - `2.7`, with OS base images:
   - `ubuntu:20.04`
   - `ubuntu:18.04`
+
+- `3.0`, with OS base images:
+  - `ubuntu:20.04`
