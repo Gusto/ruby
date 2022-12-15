@@ -46,6 +46,7 @@ SUPPORTED_PAIRS.each do |ruby_version, os_bases|
       step_counter += 1
       name = ":ruby:Ruby #{ruby_version} on :ubuntu:#{os_version} for #{platform}"
       step_key = "ruby-build-step-#{step_counter}"
+      ruby_builder_name = "ruby-builder-#{step_counter}"
       platform_step = {
         'name' => name,
         'key' => step_key,
@@ -53,10 +54,9 @@ SUPPORTED_PAIRS.each do |ruby_version, os_bases|
           'queue' => QUEUES_FOR_PLATFORM[platform]
         },
         'commands' => [
-          "docker buildx rm ruby-builder || true",
-          "docker buildx create --name ruby-builder",
-          "docker buildx build --builder ruby-builder --platform linux/#{platform} --cache-to type=local,dest=#{platform}-image-build -f #{dockerfile} .",
-          "docker buildx rm ruby-builder || true",
+          "docker buildx create --name #{ruby_builder_name}",
+          "docker buildx build --builder #{ruby_builder_name} --platform linux/#{platform} --cache-to type=local,dest=#{platform}-image-build -f #{dockerfile} .",
+          "docker buildx rm #{ruby_builder_name} || true",
         ],
         'plugins' => [{
           "ssh://git@github.com/Gusto/cache-buildkite-plugin.git#v1.11" => { 
@@ -81,6 +81,9 @@ SUPPORTED_PAIRS.each do |ruby_version, os_bases|
     platform_args = platforms.map { |platform| "linux/#{platform}" }.join(",")
     push_args = branch == "master" ? "--push" : ""
 
+    step_counter += 1
+    ruby_builder_name = "ruby-builder-#{step_counter}"
+
     steps.push({
       'name' => ":ruby:Ruby #{ruby_version} on :ubuntu:#{os_version}",
       'depends_on' => platform_keys,
@@ -90,11 +93,10 @@ SUPPORTED_PAIRS.each do |ruby_version, os_bases|
         }
       }],
       'commands' => [
-        "docker buildx rm ruby-builder || true",
-        "docker buildx create --name ruby-builder",
-        "docker buildx build --builder ruby-builder --tag gusto/ruby:#{ruby_major_tag} --platform #{platform_args} #{platform_caches} #{push_args} -f #{dockerfile} .",
-        "docker buildx build --builder ruby-builder --tag gusto/ruby:#{ruby_minor_tag} --platform #{platform_args} #{platform_caches} #{push_args} -f #{dockerfile} .",
-        "docker buildx rm ruby-builder || true",
+        "docker buildx create --name #{ruby_builder_name}",
+        "docker buildx build --builder #{ruby_builder_name} --tag gusto/ruby:#{ruby_major_tag} --platform #{platform_args} #{platform_caches} #{push_args} -f #{dockerfile} .",
+        "docker buildx build --builder #{ruby_builder_name} --tag gusto/ruby:#{ruby_minor_tag} --platform #{platform_args} #{platform_caches} #{push_args} -f #{dockerfile} .",
+        "docker buildx rm #{ruby_builder_name} || true",
       ]
     })
   end
