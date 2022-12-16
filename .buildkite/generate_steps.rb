@@ -57,7 +57,7 @@ SUPPORTED_PAIRS.each do |ruby_version, os_bases|
           "docker buildx create --name #{ruby_builder_name}",
           "docker buildx build --builder #{ruby_builder_name} --platform linux/#{platform} --cache-to type=local,dest=#{platform}-image-build -f #{dockerfile} .",
           "docker buildx rm #{ruby_builder_name} || true",
-          "ls -al *-image-build",
+          "ls -al",
         ],
         'plugins' => [{
           "ssh://git@github.com/Gusto/cache-buildkite-plugin.git#v1.11" => { 
@@ -86,7 +86,7 @@ SUPPORTED_PAIRS.each do |ruby_version, os_bases|
     ruby_builder_name = "ruby-builder-#{step_counter}"
 
     steps.push({
-      'name' => ":merge:Ruby #{ruby_version} on :ubuntu:#{os_version}",
+      'name' => ":ladle:Ruby #{ruby_version} on :ubuntu:#{os_version}",
       'depends_on' => platform_keys,
       'plugins' => [{
         "ssh://git@github.com/Gusto/cache-buildkite-plugin.git#v1.11" => { 
@@ -94,7 +94,7 @@ SUPPORTED_PAIRS.each do |ruby_version, os_bases|
         }
       }],
       'commands' => [
-        "ls -al *-image-build",
+        "ls -al",
         "docker buildx create --name #{ruby_builder_name}",
         "docker buildx build --builder #{ruby_builder_name} --tag gusto/ruby:#{ruby_major_tag} --platform #{platform_args} #{platform_caches} #{push_args} -f #{dockerfile} .",
         "docker buildx build --builder #{ruby_builder_name} --tag gusto/ruby:#{ruby_minor_tag} --platform #{platform_args} #{platform_caches} #{push_args} -f #{dockerfile} .",
