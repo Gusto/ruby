@@ -33,6 +33,8 @@ QUEUES_FOR_PLATFORM = {
 step_counter = 0
 steps = []
 
+step_seed = Time.now.to_i
+
 SUPPORTED_PAIRS.each do |ruby_version, os_bases|
   os_bases.each do |os_version, platforms|
     dockerfile = "#{ruby_version}/#{os_version}/Dockerfile"
@@ -45,7 +47,7 @@ SUPPORTED_PAIRS.each do |ruby_version, os_bases|
     platforms.each do |platform|
       step_counter += 1
       name = ":ruby:Ruby #{ruby_version} on :ubuntu:#{os_version} for #{platform}"
-      step_key = "ruby-build-step-#{step_counter}"
+      step_key = "ruby-build-step-#{step_counter}-#{step_seed}"
       ruby_builder_name = "ruby-builder-#{step_counter}"
       platform_step = {
         'name' => name,
