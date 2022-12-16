@@ -16,6 +16,12 @@ SUPPORTED_PAIRS = {
   "2.7": {
     "ubuntu20.04": ["amd64", "arm64"],
     "ubuntu18.04": ["amd64"],
+  },
+  "3.0": {
+    "ubuntu20.04": ["amd64", "arm64"],
+  },
+  "3.1": {
+    "ubuntu20.04": ["amd64", "arm64"],
   }
 }
 
@@ -26,6 +32,8 @@ QUEUES_FOR_PLATFORM = {
 
 step_counter = 0
 steps = []
+
+step_seed = Time.now.to_i
 
 SUPPORTED_PAIRS.each do |ruby_version, os_bases|
   os_bases.each do |os_version, platforms|
@@ -39,7 +47,8 @@ SUPPORTED_PAIRS.each do |ruby_version, os_bases|
     platforms.each do |platform|
       step_counter += 1
       name = ":ruby:Ruby #{ruby_version} on :ubuntu:#{os_version} for #{platform}"
-      step_key = "ruby-build-step-#{step_counter}"
+      step_key = "ruby-build-step-#{step_counter}-#{step_seed}"
+      ruby_builder_name = "ruby-builder-#{step_counter}"
       platform_step = {
         'name' => name,
         'key' => step_key,
@@ -47,10 +56,10 @@ SUPPORTED_PAIRS.each do |ruby_version, os_bases|
           'queue' => QUEUES_FOR_PLATFORM[platform]
         },
         'commands' => [
-          "docker buildx rm ruby-builder || true",
-          "docker buildx create --name ruby-builder",
-          "docker buildx build --builder ruby-builder --platform linux/#{platform} --cache-to type=local,dest=#{platform}-image-build -f #{dockerfile} .",
-          "docker buildx rm ruby-builder || true",
+          "docker buildx create --name #{ruby_builder_name}",
+          "docker buildx build --builder #{ruby_builder_name} --platform linux/#{platform} --cache-to type=local,dest=#{platform}-image-build -f #{dockerfile} .",
+          "docker buildx rm #{ruby_builder_name} || true",
+          "ls -al",
         ],
         'plugins' => [{
           "ssh://git@github.com/Gusto/cache-buildkite-plugin.git#v1.11" => { 
@@ -75,8 +84,11 @@ SUPPORTED_PAIRS.each do |ruby_version, os_bases|
     platform_args = platforms.map { |platform| "linux/#{platform}" }.join(",")
     push_args = branch == "master" ? "--push" : ""
 
+    step_counter += 1
+    ruby_builder_name = "ruby-builder-#{step_counter}-#{step_seed}"
+
     steps.push({
-      'name' => ":ruby:Ruby #{ruby_version} on :ubuntu:#{os_version}",
+      'name' => ":ladle:Ruby #{ruby_version} on :ubuntu:#{os_version}",
       'depends_on' => platform_keys,
       'plugins' => [{
         "ssh://git@github.com/Gusto/cache-buildkite-plugin.git#v1.11" => { 
@@ -84,11 +96,11 @@ SUPPORTED_PAIRS.each do |ruby_version, os_bases|
         }
       }],
       'commands' => [
-        "docker buildx rm ruby-builder || true",
-        "docker buildx create --name ruby-builder",
-        "docker buildx build --builder ruby-builder --tag gusto/ruby:#{ruby_major_tag} --platform #{platform_args} #{platform_caches} #{push_args} -f #{dockerfile} .",
-        "docker buildx build --builder ruby-builder --tag gusto/ruby:#{ruby_minor_tag} --platform #{platform_args} #{platform_caches} #{push_args} -f #{dockerfile} .",
-        "docker buildx rm ruby-builder || true",
+        "ls -al",
+        "docker buildx create --name #{ruby_builder_name}",
+        "docker buildx build --builder #{ruby_builder_name} --tag gusto/ruby:#{ruby_major_tag} --platform #{platform_args} #{platform_caches} #{push_args} -f #{dockerfile} .",
+        "docker buildx build --builder #{ruby_builder_name} --tag gusto/ruby:#{ruby_minor_tag} --platform #{platform_args} #{platform_caches} #{push_args} -f #{dockerfile} .",
+        "docker buildx rm #{ruby_builder_name} || true",
       ]
     })
   end
