@@ -85,7 +85,7 @@ SUPPORTED_PAIRS.each do |ruby_version, os_bases|
     push_args = branch == "master" ? "--push" : ""
 
     step_counter += 1
-    ruby_builder_name = "ruby-builder-#{step_counter}"
+    ruby_builder_name = "ruby-builder-#{step_counter}-#{step_seed}"
 
     steps.push({
       'name' => ":ladle:Ruby #{ruby_version} on :ubuntu:#{os_version}",
