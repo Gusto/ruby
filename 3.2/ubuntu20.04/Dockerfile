@@ -29,7 +29,7 @@ RUN mkdir -p /usr/local/etc \
 ENV LD_PRELOAD=/usr/lib/libjemalloc.so.2
 ENV RUBY_MAJOR 3.2
 ENV RUBY_VERSION 3.2.2
-ENV RUBY_DOWNLOAD_SHA256 96c57558871a6748de5bc9f274e93f4b5aad06cd8f37befa0e8d94e7b8a423bc
+ENV RUBY_DOWNLOAD_SHA256 4b352d0f7ec384e332e3e44cdbfdcd5ff2d594af3c8296b5636c710975149e23
 
 # some of ruby's build scripts are written in ruby
 #   we purge system ruby later to make sure our final image uses what we just built
