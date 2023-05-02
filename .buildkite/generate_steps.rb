@@ -22,6 +22,9 @@ SUPPORTED_PAIRS = {
   },
   "3.1": {
     "ubuntu20.04": ["amd64", "arm64"],
+  },
+  "3.2": {
+    "ubuntu20.04": ["amd64", "arm64"],
   }
 }
 
